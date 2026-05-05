@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings · Outreach</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <h1>Outreach</h1>
+    </div>
+    <nav class="tabs">
+      <a class="tab" href="/dashboard/overview">Overview</a>
+      <a class="tab" href="/dashboard/leads">Leads</a>
+      <a class="tab" href="/dashboard/approvals">Approvals</a>
+      <a class="tab" href="/dashboard/policy">Policy</a>
+      <a class="tab" href="/dashboard/activity">Activity</a>
+      <a class="tab" href="/dashboard/settings">Settings</a>
+    </nav>
+    <div class="topbar-right">
+      <button id="refresh-btn" class="btn-secondary">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel active">
+      <div class="settings-header">
+        <h2>Outbound sender</h2>
+        <p class="muted">
+          One backend can be active at a time. Configure each one and pick which is live —
+          no restart required. Credentials are encrypted at rest.
+        </p>
+      </div>
+
+      <div class="config-card" data-card="approval">
+        <div class="config-head">
+          <div class="config-title">
+            <h3>Send behavior</h3>
+            <p class="muted">
+              When approval is required, generated drafts wait in the
+              <a href="/dashboard/approvals">Approvals</a> queue for human review
+              before they go out. Otherwise drafts auto-send the moment they're
+              generated.
+            </p>
+          </div>
+        </div>
+
+        <label class="toggle-row">
+          <input type="checkbox" id="require-approval-toggle" />
+          <span class="toggle-label">Require human approval before sending</span>
+        </label>
+        <div class="config-actions">
+          <button type="button" class="btn-secondary" id="save-approval">Save</button>
+          <span class="settings-status" id="save-approval-status"></span>
+        </div>
+      </div>
+
+      <div class="config-card" data-card="send-window">
+        <div class="config-head">
+          <div class="config-title">
+            <h3>Send window</h3>
+            <p class="muted">
+              Restrict the scheduler to specific days and hours.
+              Outside the window, ticks are skipped — nothing is sent.
+              Leave empty for "always on."
+            </p>
+          </div>
+          <span class="config-badge" id="window-state-badge"></span>
+        </div>
+
+        <div class="window-block">
+          <div class="window-label">Days</div>
+          <div class="window-days">
+            <label><input type="checkbox" data-day="0" /> Mo</label>
+            <label><input type="checkbox" data-day="1" /> Tu</label>
+            <label><input type="checkbox" data-day="2" /> We</label>
+            <label><input type="checkbox" data-day="3" /> Th</label>
+            <label><input type="checkbox" data-day="4" /> Fr</label>
+            <label><input type="checkbox" data-day="5" /> Sa</label>
+            <label><input type="checkbox" data-day="6" /> Su</label>
+          </div>
+        </div>
+
+        <div class="window-block">
+          <div class="window-label">Hours <span class="muted">(24-hour clock)</span></div>
+          <div class="window-hours">
+            <span>from</span>
+            <select id="window-start-hour"><option value="">—</option></select>
+            <span>to</span>
+            <select id="window-end-hour"><option value="">—</option></select>
+          </div>
+        </div>
+
+        <div class="window-block">
+          <div class="window-label">Timezone</div>
+          <select id="window-timezone">
+            <option value="">UTC (default)</option>
+            <option value="UTC">UTC</option>
+            <option value="America/Los_Angeles">America/Los_Angeles (PT)</option>
+            <option value="America/Denver">America/Denver (MT)</option>
+            <option value="America/Chicago">America/Chicago (CT)</option>
+            <option value="America/New_York">America/New_York (ET)</option>
+            <option value="Europe/London">Europe/London</option>
+            <option value="Europe/Berlin">Europe/Berlin</option>
+            <option value="Asia/Singapore">Asia/Singapore</option>
+            <option value="Asia/Tokyo">Asia/Tokyo</option>
+            <option value="Australia/Sydney">Australia/Sydney</option>
+          </select>
+        </div>
+
+        <div class="config-actions">
+          <button type="button" class="btn-secondary" id="save-window">Save</button>
+          <button type="button" class="btn-secondary" id="clear-window">Clear (always on)</button>
+          <span class="settings-status" id="save-window-status"></span>
+        </div>
+      </div>
+
+      <!-- Stub -->
+      <div class="config-card" data-backend="stub">
+        <div class="config-head">
+          <div class="config-title">
+            <h3>Stub</h3>
+            <p class="muted">No-op sender. Logs would-send events to the server console; no real email sent. Use for development.</p>
+          </div>
+          <span class="config-badge" data-badge></span>
+        </div>
+        <div class="config-actions">
+          <button class="btn-secondary" data-action="activate" data-backend="stub">Make active</button>
+        </div>
+        <div class="banner" data-banner></div>
+      </div>
+
+      <!-- Gmail -->
+      <div class="config-card" data-backend="gmail">
+        <div class="config-head">
+          <div class="config-title">
+            <h3>Gmail</h3>
+            <p class="muted">
+              Send via Gmail SMTP using an app password.
+              Best for testing on your own inbox. Free Gmail limit: 500/day.
+              <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener">How to get an app password →</a>
+            </p>
+          </div>
+          <span class="config-badge" data-badge></span>
+        </div>
+
+        <form class="config-form" data-form="gmail">
+          <div class="config-field">
+            <label for="gmail-username">Gmail address</label>
+            <input id="gmail-username" name="GMAIL_USERNAME" type="email" placeholder="you@gmail.com" autocomplete="off" />
+            <p class="config-hint">The account you'll send from.</p>
+          </div>
+
+          <div class="config-field">
+            <label for="gmail-password">App password</label>
+            <input id="gmail-password" name="GMAIL_APP_PASSWORD" type="password" autocomplete="off" />
+            <p class="config-hint">16-character password from <code>myaccount.google.com/apppasswords</code>. Not your Gmail login password.</p>
+          </div>
+
+          <div class="config-field">
+            <label for="gmail-from-address">From address <span class="config-optional">(optional)</span></label>
+            <input id="gmail-from-address" name="GMAIL_FROM_ADDRESS" type="email" autocomplete="off" />
+            <p class="config-hint">Defaults to your Gmail address above.</p>
+          </div>
+
+          <div class="config-field">
+            <label for="gmail-from-name">From name <span class="config-optional">(optional)</span></label>
+            <input id="gmail-from-name" name="GMAIL_FROM_NAME" type="text" placeholder="Alex from Acme" autocomplete="off" />
+            <p class="config-hint">Display name recipients see in their inbox.</p>
+          </div>
+
+          <div class="config-actions">
+            <button type="submit" class="btn-secondary">Save changes</button>
+            <button type="button" class="btn-secondary" data-action="test" data-backend="gmail">Test connection</button>
+            <button type="button" class="btn-secondary btn-activate" data-action="activate" data-backend="gmail">Make active</button>
+          </div>
+          <div class="banner" data-banner></div>
+        </form>
+      </div>
+
+      <!-- Instantly -->
+      <div class="config-card" data-backend="instantly">
+        <div class="config-head">
+          <div class="config-title">
+            <h3>Instantly</h3>
+            <p class="muted">
+              Push to an Instantly campaign for production-grade cold outreach with warmup
+              and inbox rotation. Replies and bounces flow back via the
+              <code>/webhooks/instantly</code> endpoint.
+            </p>
+          </div>
+          <span class="config-badge" data-badge></span>
+        </div>
+
+        <form class="config-form" data-form="instantly">
+          <div class="config-field">
+            <label for="instantly-api-key">API key</label>
+            <input id="instantly-api-key" name="INSTANTLY_API_KEY" type="password" autocomplete="off" />
+            <p class="config-hint">Settings → Integrations → API Keys in Instantly.</p>
+          </div>
+
+          <div class="config-field">
+            <label for="instantly-campaign">Default campaign ID</label>
+            <input id="instantly-campaign" name="INSTANTLY_DEFAULT_CAMPAIGN_ID" type="text" autocomplete="off" />
+            <p class="config-hint">UUID from your campaign's URL. Leads get added to this campaign with custom subject/body variables.</p>
+          </div>
+
+          <div class="config-field">
+            <label for="instantly-base">API base URL <span class="config-optional">(optional)</span></label>
+            <input id="instantly-base" name="INSTANTLY_API_BASE_URL" type="text" placeholder="https://api.instantly.ai/api/v2" autocomplete="off" />
+            <p class="config-hint">Override only if Instantly changes endpoints.</p>
+          </div>
+
+          <div class="config-actions">
+            <button type="submit" class="btn-secondary">Save changes</button>
+            <button type="button" class="btn-secondary" data-action="test" data-backend="instantly">Test connection</button>
+            <button type="button" class="btn-secondary btn-activate" data-action="activate" data-backend="instantly">Make active</button>
+          </div>
+          <div class="banner" data-banner></div>
+        </form>
+      </div>
+
+    </section>
+  </main>
+
+  <script src="/static/shared.js"></script>
+  <script src="/static/settings.js"></script>
+</body>
+</html>

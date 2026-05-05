@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overview · Outreach</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <h1>Outreach</h1>
+    </div>
+    <nav class="tabs">
+      <a class="tab" href="/dashboard/overview">Overview</a>
+      <a class="tab" href="/dashboard/leads">Leads</a>
+      <a class="tab" href="/dashboard/approvals">Approvals</a>
+      <a class="tab" href="/dashboard/policy">Policy</a>
+      <a class="tab" href="/dashboard/activity">Activity</a>
+      <a class="tab" href="/dashboard/settings">Settings</a>
+    </nav>
+    <div class="topbar-right">
+      <label class="window-label">
+        Window
+        <select id="window-select">
+          <option value="7">7 days</option>
+          <option value="14">14 days</option>
+          <option value="30">30 days</option>
+          <option value="90">90 days</option>
+        </select>
+      </label>
+      <button id="refresh-btn" class="btn-secondary">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel active">
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">Total Leads</div><div class="kpi-value" id="kpi-total-leads">—</div><div class="kpi-sub" id="kpi-leads-window">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Touches</div><div class="kpi-value" id="kpi-touches">—</div><div class="kpi-sub">in window</div></div>
+        <div class="kpi-card"><div class="kpi-label">Sent</div><div class="kpi-value" id="kpi-sent">—</div><div class="kpi-sub">emails delivered</div></div>
+        <div class="kpi-card"><div class="kpi-label">Open Rate</div><div class="kpi-value" id="kpi-open-rate">—</div><div class="kpi-sub" id="kpi-opened">—</div></div>
+        <div class="kpi-card"><div class="kpi-label">Reply Rate</div><div class="kpi-value" id="kpi-reply-rate">—</div><div class="kpi-sub" id="kpi-replied">—</div></div>
+        <div class="kpi-card highlight"><div class="kpi-label">Positive Rate</div><div class="kpi-value" id="kpi-positive-rate">—</div><div class="kpi-sub" id="kpi-positive">—</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>Sent / Opened / Replied</h2><span class="muted" id="ts-window-label"></span></div>
+        <div class="chart-wrapper">
+          <canvas id="ts-chart" width="900" height="240"></canvas>
+        </div>
+        <div class="legend">
+          <span><i class="dot dot-sent"></i>Sent</span>
+          <span><i class="dot dot-opened"></i>Opened</span>
+          <span><i class="dot dot-replied"></i>Replied</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><h2>Event breakdown</h2></div>
+        <div id="event-breakdown" class="event-breakdown"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/static/shared.js"></script>
+  <script src="/static/overview.js"></script>
+</body>
+</html>

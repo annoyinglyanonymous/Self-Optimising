@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leads · Outreach</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <h1>Outreach</h1>
+    </div>
+    <nav class="tabs">
+      <a class="tab" href="/dashboard/overview">Overview</a>
+      <a class="tab" href="/dashboard/leads">Leads</a>
+      <a class="tab" href="/dashboard/approvals">Approvals</a>
+      <a class="tab" href="/dashboard/policy">Policy</a>
+      <a class="tab" href="/dashboard/activity">Activity</a>
+      <a class="tab" href="/dashboard/settings">Settings</a>
+    </nav>
+    <div class="topbar-right">
+      <button id="refresh-btn" class="btn-secondary">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel active">
+      <div class="filters">
+        <input type="search" id="leads-search" placeholder="Search email, name, company..." />
+        <select id="leads-persona">
+          <option value="">All personas</option>
+        </select>
+        <select id="leads-status">
+          <option value="">All statuses</option>
+          <option value="pending">pending</option>
+          <option value="complete">complete</option>
+        </select>
+        <button id="add-open" type="button" class="btn-secondary">Add lead</button>
+        <button id="import-open" type="button" class="btn-secondary">Import CSV</button>
+      </div>
+      <div class="card">
+        <table class="data-table" id="leads-table">
+          <thead>
+            <tr>
+              <th>Email</th><th>Name</th><th>Company</th><th>Title</th>
+              <th>Persona</th><th>Status</th><th>Created</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <div class="table-footer">
+          <span id="leads-count" class="muted"></span>
+          <div class="pager">
+            <button id="leads-prev" class="btn-secondary">Prev</button>
+            <button id="leads-next" class="btn-secondary">Next</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="import-modal" class="modal-overlay" hidden>
+    <div class="modal-panel">
+      <div class="modal-header">
+        <h2>Import leads from CSV</h2>
+        <button id="import-close" type="button" class="modal-close" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="muted">
+          One row per lead. Required column: <code>email</code>.
+          Optional: <code>first_name</code>, <code>last_name</code>, <code>company</code>,
+          <code>domain</code>, <code>title</code>, <code>linkedin_url</code>,
+          <code>persona</code>, <code>company_size</code>, <code>state</code>,
+          <code>growth_stage</code>, <code>tech_stack</code>.
+        </p>
+        <p class="muted">
+          <code>tech_stack</code> can be comma-separated within the cell. Existing leads
+          (matched by email) are updated; blank cells don't overwrite existing values.
+        </p>
+        <p>
+          <a href="/leads/import-csv/template" class="muted">Download template ↓</a>
+        </p>
+        <div class="import-file-row">
+          <input type="file" id="import-file" accept=".csv,text/csv" />
+        </div>
+        <div class="import-actions">
+          <button id="import-submit" type="button" class="btn-secondary" disabled>Import</button>
+        </div>
+        <div id="import-result" class="banner" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="add-modal" class="modal-overlay" hidden>
+    <div class="modal-panel modal-wide">
+      <div class="modal-header">
+        <h2 id="add-modal-title">Add a lead</h2>
+        <button id="add-close" type="button" class="modal-close" aria-label="Close">×</button>
+      </div>
+      <form id="add-form" class="modal-body">
+        <p class="muted">Required: <code>email</code>. Adding the same email again updates the existing lead.</p>
+
+        <div class="form-row">
+          <div class="form-field full">
+            <label for="add-email">Email <span class="required">*</span></label>
+            <input id="add-email" name="email" type="email" required autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="add-first-name">First name</label>
+            <input id="add-first-name" name="first_name" type="text" autocomplete="off" />
+          </div>
+          <div class="form-field">
+            <label for="add-last-name">Last name</label>
+            <input id="add-last-name" name="last_name" type="text" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="add-company">Company</label>
+            <input id="add-company" name="company" type="text" autocomplete="off" />
+          </div>
+          <div class="form-field">
+            <label for="add-domain">Domain</label>
+            <input id="add-domain" name="domain" type="text" placeholder="acme.com" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="add-title">Title</label>
+            <input id="add-title" name="title" type="text" autocomplete="off" />
+          </div>
+          <div class="form-field">
+            <label for="add-persona">Persona</label>
+            <input id="add-persona" name="persona" type="text" placeholder="insurance_agent" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="add-company-size">Company size</label>
+            <input id="add-company-size" name="company_size" type="text" placeholder="11-50" autocomplete="off" />
+          </div>
+          <div class="form-field">
+            <label for="add-state">State</label>
+            <input id="add-state" name="state" type="text" placeholder="CA" autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label for="add-growth-stage">Growth stage</label>
+            <input id="add-growth-stage" name="growth_stage" type="text" placeholder="growth" autocomplete="off" />
+          </div>
+          <div class="form-field">
+            <label for="add-linkedin">LinkedIn URL</label>
+            <input id="add-linkedin" name="linkedin_url" type="url" placeholder="https://linkedin.com/in/..." autocomplete="off" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field full">
+            <label for="add-tech-stack">Tech stack</label>
+            <input id="add-tech-stack" name="tech_stack" type="text" placeholder="Salesforce, HubSpot, AMS360" autocomplete="off" />
+            <p class="config-hint">Comma-separated.</p>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-field full">
+            <label for="add-enrichment-status">Enrichment status</label>
+            <select id="add-enrichment-status" name="enrichment_status">
+              <option value="">complete (default)</option>
+              <option value="pending">pending</option>
+              <option value="in_progress">in_progress</option>
+              <option value="complete">complete</option>
+              <option value="failed">failed</option>
+            </select>
+            <p class="config-hint">
+              The scheduler only sends to leads marked <code>complete</code>.
+              Use <code>pending</code> if you want this lead held back.
+            </p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" id="add-submit" class="btn-secondary">Save lead</button>
+        </div>
+        <div id="add-result" class="banner" style="display:none"></div>
+      </form>
+    </div>
+  </div>
+
+  <aside id="lead-drawer" class="drawer">
+    <div class="drawer-header">
+      <h2 id="drawer-title">Lead</h2>
+      <button id="drawer-close" class="btn-secondary">Close</button>
+    </div>
+    <div id="drawer-body" class="drawer-body"></div>
+  </aside>
+  <div id="drawer-backdrop" class="drawer-backdrop"></div>
+
+  <script src="/static/shared.js"></script>
+  <script src="/static/leads.js"></script>
+</body>
+</html>

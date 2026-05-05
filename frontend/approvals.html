@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Approvals · Outreach</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <h1>Outreach</h1>
+    </div>
+    <nav class="tabs">
+      <a class="tab" href="/dashboard/overview">Overview</a>
+      <a class="tab" href="/dashboard/leads">Leads</a>
+      <a class="tab" href="/dashboard/approvals">Approvals</a>
+      <a class="tab" href="/dashboard/policy">Policy</a>
+      <a class="tab" href="/dashboard/activity">Activity</a>
+      <a class="tab" href="/dashboard/settings">Settings</a>
+    </nav>
+    <div class="topbar-right">
+      <button id="refresh-btn" class="btn-secondary">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel active">
+      <div class="settings-header">
+        <h2>Approvals</h2>
+        <p class="muted" id="approvals-summary">Drafts awaiting human review before they go out.</p>
+        <p class="muted" id="approvals-flag-warn" style="display:none">
+          <strong>REQUIRE_APPROVAL is currently off.</strong>
+          New drafts auto-send. Turn it on in Settings → Send behavior to start queuing for review.
+        </p>
+      </div>
+
+      <div id="approvals-list"></div>
+    </section>
+  </main>
+
+  <script src="/static/shared.js"></script>
+  <script src="/static/approvals.js"></script>
+</body>
+</html>

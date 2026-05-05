@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Activity · Outreach</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo-dot"></span>
+      <h1>Outreach</h1>
+    </div>
+    <nav class="tabs">
+      <a class="tab" href="/dashboard/overview">Overview</a>
+      <a class="tab" href="/dashboard/leads">Leads</a>
+      <a class="tab" href="/dashboard/approvals">Approvals</a>
+      <a class="tab" href="/dashboard/policy">Policy</a>
+      <a class="tab" href="/dashboard/activity">Activity</a>
+      <a class="tab" href="/dashboard/settings">Settings</a>
+    </nav>
+    <div class="topbar-right">
+      <button id="refresh-btn" class="btn-secondary">Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel active">
+      <div class="card">
+        <div class="card-header"><h2>Recent events</h2></div>
+        <ul id="activity-feed" class="activity-feed"></ul>
+      </div>
+    </section>
+  </main>
+
+  <aside id="lead-drawer" class="drawer">
+    <div class="drawer-header">
+      <h2 id="drawer-title">Lead</h2>
+      <button id="drawer-close" class="btn-secondary">Close</button>
+    </div>
+    <div id="drawer-body" class="drawer-body"></div>
+  </aside>
+  <div id="drawer-backdrop" class="drawer-backdrop"></div>
+
+  <script src="/static/shared.js"></script>
+  <script src="/static/activity.js"></script>
+</body>
+</html>
