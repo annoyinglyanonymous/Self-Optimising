@@ -3,7 +3,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models import Lead
 from app.services.bandit import sample_best_action
 
-AVAILABLE_CHANNELS = ["email", "linkedin"]
+# Only "email" until a LinkedIn (or other) sender backend exists. The send
+# paths in app/routers/leads.py and app/services/scheduler.py guard on
+# `policy.channel == "email"` and would silently drop other channels —
+# re-add here only alongside a real sender.
+AVAILABLE_CHANNELS = ["email"]
 AVAILABLE_ANGLES = ["pain", "growth", "compliance", "cost", "speed", "credibility"]
 
 @dataclass

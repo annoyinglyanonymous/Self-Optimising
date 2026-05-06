@@ -1,11 +1,20 @@
 """
-Background scheduler — finds leads due for a touch and queues them.
+Background scheduler — finds leads due for the next touch and runs the full
+generate→send pipeline against them.
 
-Disabled by default (SCHEDULER_ENABLED=false). Enable in .env once a sender
-exists, otherwise the loop generates drafts that never get sent.
+One tick:
+  1. Skip if outside the configured send window
+     (SCHEDULER_SEND_DAYS / START_HOUR / END_HOUR / TIMEZONE in app_settings,
+     falling back to .env). Empty values are unconstraining.
+  2. Pull eligible leads: enriched, with a persona, no terminal event, under
+     the per-persona max_touches, last touch older than touch_spacing_days.
+  3. For each lead in its own session: run safety check, ask the bandit for a
+     (channel, angle), draft the message, write a Touch, and either send via
+     the configured backend (SENDER_BACKEND) or leave the touch as
+     pending_approval if REQUIRE_APPROVAL is on.
 
-Today _process_lead writes a Touch row but does NOT send. Wire your sender
-(e.g. Instantly client) into _process_lead's TODO once it exists.
+Disabled by default (SCHEDULER_ENABLED=false) — turn it on only after a real
+sender backend is configured, otherwise it just queues drafts.
 """
 import logging
 from datetime import datetime, timedelta, timezone
@@ -39,9 +48,9 @@ TERMINAL_EVENT_TYPES = {
 
 
 def _parse_days(days: str) -> set[int] | None:
-    """Parse 'SCHEDULER_SEND_DAYS' CSV. Returns None if the field is empty or
-    unparseable (= no day filter). Returns a set of weekday numbers
-    (0=Monday..6=Sunday) otherwise."""
+    """Parse a SCHEDULER_SEND_DAYS value (CSV of weekday numbers,
+    0=Monday..6=Sunday). The string is sourced from app_settings (DB row wins,
+    .env fallback). Returns None when empty or unparseable — no day filter."""
     if not days or not days.strip():
         return None
     out: set[int] = set()

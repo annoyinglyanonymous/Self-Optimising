@@ -48,28 +48,8 @@ function showFeedback(card, kind, text) {
 async function loadApprovals() {
   const list = $("#approvals-list");
   const summary = $("#approvals-summary");
-  const flagWarn = $("#approvals-flag-warn");
 
-  // Load pending list + sender status (to check REQUIRE_APPROVAL flag).
-  const [data, senderStatus] = await Promise.all([
-    api("/leads/touches/pending"),
-    api("/api/settings/sender-status").catch(() => null),
-  ]);
-
-  // Surface flag state. We can also check via /api/settings/credentials.
-  // Easiest: read the credentials endpoint specifically for REQUIRE_APPROVAL.
-  try {
-    const creds = await api("/api/settings/credentials");
-    // REQUIRE_APPROVAL doesn't fall under any backend bucket; fetch as a special case.
-    // We added it to KEYS but BACKEND_KEYS doesn't include it, so it won't be in
-    // the bucketed response. Fall back to checking pending count: if flag is off,
-    // there will rarely be pending items, so just hide the warning.
-  } catch (_) {}
-
-  // Simpler heuristic: if there are zero pending and we have items in the leads
-  // db, surface the warning. Otherwise hide it. We could also fetch the flag
-  // explicitly, but the warning is informational.
-  flagWarn.style.display = "none";
+  const data = await api("/leads/touches/pending");
 
   list.innerHTML = "";
   if (!data.items || !data.items.length) {
