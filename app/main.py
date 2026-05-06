@@ -73,6 +73,11 @@ async def root():
     return {"status": "running"}
 
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
 @app.get("/dashboard")
 async def dashboard_index():
     return RedirectResponse(url="/dashboard/overview")
