@@ -1,6 +1,4 @@
 import random
-import numpy as np
-from scipy.stats import beta as beta_dist
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
@@ -44,7 +42,7 @@ async def sample_best_action(
     for channel in channels:
         for angle in angles:
             stat = await get_or_create_stat(db, persona, channel, angle)
-            sample = beta_dist.rvs(stat.alpha, stat.beta_param)
+            sample = random.betavariate(stat.alpha, stat.beta_param)
             if sample > best_sample:
                 best_sample = sample
                 best_channel = channel
@@ -78,7 +76,7 @@ async def record_reward(
 
 
 async def _log_rule_change(db: AsyncSession, stat: PolicyStat) -> None:
-    confidence = float(np.clip(stat.alpha / (stat.alpha + stat.beta_param), 0, 1))
+    confidence = max(0.0, min(1.0, stat.alpha / (stat.alpha + stat.beta_param)))
     rule = {
         "segment_key": stat.segment_key,
         "alpha": stat.alpha,
